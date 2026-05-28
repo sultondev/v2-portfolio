@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Developer Portfolio — Low-Fi Wireframes</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --paper: #f5f2ea;
+    --rule: #cdc8bc;
+    --muted: #6b675e;
+    --accent: oklch(0.55 0.15 30);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Kalam", "Caveat", "Comic Sans MS", system-ui, sans-serif;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px);
+    background-size: 100% 28px;
+    background-position: 0 16px;
+    min-height: 100vh;
+  }
+  .header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px 24px;
+    border-bottom: 2px dashed var(--rule);
+  }
+  .header h1 {
+    font-family: "Caveat", "Kalam", cursive;
+    font-size: 44px;
+    margin: 0 0 8px;
+    letter-spacing: 0.5px;
+  }
+  .header .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-family: "Kalam", system-ui, sans-serif;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .header .meta span b { color: var(--ink); font-weight: 700; }
+
+  .pages {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 32px 120px;
+  }
+
+  .page {
+    margin-top: 40px;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .page.hidden { display: none; }
+  .page-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-bottom: 2px solid var(--ink);
+    background: #ece7d8;
+    font-family: "Caveat", cursive;
+  }
+  .page-head .num {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .page-head .title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .page-head .tag {
+    font-family: "Kalam", system-ui, sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .page-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .page-body.split {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+  .ascii {
+    font-family: "JetBrains Mono", "Fira Code", "Menlo", monospace;
+    font-size: 12.5px;
+    line-height: 1.45;
+    white-space: pre;
+    overflow-x: auto;
+    padding: 24px 28px;
+    color: var(--ink);
+    border-right: 2px dashed var(--rule);
+  }
+  .ascii.mobile { font-size: 12px; }
+  .notes {
+    padding: 24px 22px;
+    font-family: "Kalam", system-ui, sans-serif;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .notes h3 {
+    font-family: "Caveat", cursive;
+    font-size: 24px;
+    margin: 0 0 8px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 4px;
+    display: inline-block;
+  }
+  .notes ul { margin: 8px 0 18px; padding-left: 18px; }
+  .notes li { margin: 4px 0; }
+  .notes .hint {
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+  .notes .pill {
+    display: inline-block;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin: 2px 4px 2px 0;
+    font-size: 12px;
+    background: #fff8e6;
+  }
+
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .toc button {
+    font-family: "Kalam", cursive;
+    background: #fff8e6;
+    border: 1.5px solid var(--ink);
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: transform .08s ease;
+  }
+  .toc button:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+  .toc button.active { background: var(--ink); color: var(--paper); }
+
+  .legend {
+    margin-top: 32px;
+    padding: 18px 22px;
+    border: 1.5px dashed var(--ink);
+    background: #fffaee;
+    font-family: "Kalam", system-ui, sans-serif;
+    font-size: 14px;
+  }
+  .legend b { font-family: "Caveat", cursive; font-size: 20px; }
+  .legend .row { display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 8px; }
+  .legend code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    background: #ece7d8;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 900px) {
+    .page-body.split { grid-template-columns: 1fr; }
+    .ascii { border-right: none; border-bottom: 2px dashed var(--rule); }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="header">
+  <h1>Developer Portfolio — Low-Fi Wireframes</h1>
+  <div class="meta">
+    <span><b>Output:</b> ASCII + labels, no styling</span>
+    <span><b>Audience:</b> devs · tech clients · founders</span>
+    <span><b>Direction:</b> grid-based, asymmetric hero, slight cyberpunk concept</span>
+  </div>
+  <div class="toc" id="toc"></div>
+</div>
+
+<div class="pages" id="pages">
+
+<!-- =================== PAGE 1: HOME =================== -->
+<section class="page" data-page="home">
+  <div class="page-head">
+    <span class="num">01</span>
+    <span class="title">HOME / Main Page</span>
+    <span class="tag">Desktop · 1440 baseline</span>
+  </div>
+  <div class="page-body split">
+<pre class="ascii">┌──────────────────────────────────────────────────────────────────────────────┐
+│ [LOGO]   [NAV: Home Projects Services Blog Contact]  [BTN: Let's build →] │  ◄── STICKY NAV
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ░ HERO — fullscreen 100vh ░                                                │
+│   ┌──────────────────────────────────┐  ┌──────────────────────────────┐     │
+│   │                                  │  │ ╔══════════════════════════╗ │     │
+│   │  [TAG] available for work ●      │  │ ║ [VISUAL PLACEHOLDER]     ║ │     │
+│   │                                  │  │ ║                          ║ │     │
+│   │  [H1] DESIGN                     │  │ ║   code block / abstract  ║ │     │
+│   │       ENGINEER.                  │  │ ║   geometric element      ║ │     │
+│   │       (oversized, 2 lines)       │  │ ║                          ║ │     │
+│   │                                  │  │ ║   > const stack = [...]  ║ │     │
+│   │  [TEXT] short 1–2 line subtitle. │  │ ║                          ║ │     │
+│   │  I build fast, accessible web    │  │ ╚══════════════════════════╝ │     │
+│   │  products for startups.          │  │                              │     │
+│   │                                  │  │  ASYMMETRIC — visual offset  │     │
+│   │  [BTN-PRIMARY: View Work →]      │  │  down/right of the headline  │     │
+│   │  [BTN-GHOST:   Get in Touch]     │  │                              │     │
+│   │                                  │  └──────────────────────────────┘     │
+│   └──────────────────────────────────┘                                       │
+│                                                                              │
+│   [SCROLL HINT ↓]                                  [META: SF · 2026 · v3]    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ░ ABOUT / SUMMARY — 2-col ░                                                │
+│   ┌────────────────────┐   ┌──────────────────────────────────────────┐      │
+│   │                    │   │ [H2] About                               │      │
+│   │  [IMAGE]           │   │                                          │      │
+│   │  portrait or       │   │ [TEXT] short bio paragraph. 3–4 lines.   │      │
+│   │  abstract          │   │                                          │      │
+│   │  placeholder       │   │ [LIST — Key Highlights]                  │      │
+│   │                    │   │   • 6+ yrs shipping production web apps  │      │
+│   │  ratio ~ 4:5       │   │   • Vue / Nuxt / TS specialist           │      │
+│   │                    │   │   • Open-source contributor              │      │
+│   └────────────────────┘   │   • Talks & writing                      │      │
+│                            └──────────────────────────────────────────┘      │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ░ TECH STACK — 3 grouped columns ░                                         │
+│   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐              │
+│   │ [H3] FRONTEND   │  │ [H3] BACKEND    │  │ [H3] TOOLS      │              │
+│   │ ─────────────── │  │ ─────────────── │  │ ─────────────── │              │
+│   │ ( Vue )         │  │ ( Node )        │  │ ( Git )         │              │
+│   │ ( Nuxt )        │  │ ( Postgres )    │  │ ( Figma )       │              │
+│   │ ( React )       │  │ ( Supabase )    │  │ ( Docker )      │              │
+│   │ ( TS )          │  │ ( Redis )       │  │ ( Vercel )      │              │
+│   │ ( Tailwind )    │  │ ( tRPC )        │  │ ( CI/CD )       │              │
+│   └─────────────────┘  └─────────────────┘  └─────────────────┘              │
+│   badges = pill placeholders                                                 │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ░ FEATURED PROJECTS — 3-col grid (or 2x3 = 6) ░                            │
+│   [H2] Selected Work                              [LINK: All projects →]     │
+│                                                                              │
+│   ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐           │
+│   │ [IMAGE 16:10]    │  │ [IMAGE 16:10]    │  │ [IMAGE 16:10]    │           │
+│   │                  │  │                  │  │                  │           │
+│   ├──────────────────┤  ├──────────────────┤  ├──────────────────┤           │
+│   │ [TITLE]          │  │ [TITLE]          │  │ [TITLE]          │           │
+│   │ [DESC 2 lines]   │  │ [DESC 2 lines]   │  │ [DESC 2 lines]   │           │
+│   │ [TECH: ●●●]      │  │ [TECH: ●●●]      │  │ [TECH: ●●●]      │           │
+│   │ [BTN: View →]    │  │ [BTN: View →]    │  │ [BTN: View →]    │           │
+│   └──────────────────┘  └──────────────────┘  └──────────────────┘           │
+│                                                                              │
+│   ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐           │
+│   │   (project 4)    │  │   (project 5)    │  │   (project 6)    │           │
+│   └──────────────────┘  └──────────────────┘  └──────────────────┘           │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ░ CTA STRIP ░                                                              │
+│   ┌──────────────────────────────────────────────────────────────────┐       │
+│   │ [H2] Got a project in mind?       [BTN-PRIMARY: Start a project] │       │
+│   └──────────────────────────────────────────────────────────────────┘       │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [FOOTER]  [logo]  [nav links]  [socials: GH · LI · X]   © 2026 — v3.0       │
+└──────────────────────────────────────────────────────────────────────────────┘</pre>
+    <aside class="notes">
+      <h3>UX notes — Home</h3>
+      <ul>
+        <li><b>Sticky nav</b> — top of page, condenses on scroll.</li>
+        <li><b>Hero is asymmetric</b>: H1 anchored left, visual offset bottom-right (cyberpunk hint).</li>
+        <li><b>Primary CTA</b>: <i>View Work</i>. Secondary: <i>Get in Touch</i>.</li>
+        <li><b>Scroll flow</b>: Hero → About → Stack → Projects → CTA → Footer.</li>
+        <li><b>Hierarchy</b>: H1 dominant; About + Projects equal weight; Stack supportive.</li>
+      </ul>
+      <h3>Components used</h3>
+      <span class="pill">[LOGO]</span><span class="pill">[NAV]</span><span class="pill">[H1]/[H2]/[H3]</span>
+      <span class="pill">[BTN-PRIMARY]</span><span class="pill">[BTN-GHOST]</span><span class="pill">[IMAGE]</span>
+      <span class="pill">[TEXT]</span><span class="pill">[TAG]</span><span class="pill">[CARD]</span>
+      <p class="hint">No colors / no type styling — boxes &amp; labels only.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- =================== PAGE 1 MOBILE =================== -->
+<section class="page" data-page="home-mobile">
+  <div class="page-head">
+    <span class="num">01·m</span>
+    <span class="title">HOME — Mobile Stack</span>
+    <span class="tag">~375px width</span>
+  </div>
+  <div class="page-body">
+<pre class="ascii mobile">┌──────────────────────┐
+│ [LOGO]      [☰ MENU] │ ◄── sticky
+├──────────────────────┤
+│                      │
+│ [TAG] available ●    │
+│                      │
+│ [H1]                 │
+│  DESIGN              │
+│  ENGINEER.           │
+│                      │
+│ [TEXT] short bio.    │
+│                      │
+│ [BTN: View Work →]   │
+│ [BTN: Get in Touch]  │
+│                      │
+│ ┌──────────────────┐ │
+│ │ [VISUAL PLACE-   │ │
+│ │  HOLDER]         │ │
+│ │ code / abstract  │ │
+│ └──────────────────┘ │
+│                      │
+├──────────────────────┤
+│ [H2] About           │
+│ ┌──────────────────┐ │
+│ │ [IMAGE]          │ │
+│ └──────────────────┘ │
+│ [TEXT] bio…          │
+│ • highlight 1        │
+│ • highlight 2        │
+│ • highlight 3        │
+├──────────────────────┤
+│ [H2] Tech Stack      │
+│ ▸ FRONTEND           │
+│   (Vue)(Nuxt)(TS)    │
+│ ▸ BACKEND            │
+│   (Node)(PG)(Redis)  │
+│ ▸ TOOLS              │
+│   (Git)(Figma)(CI)   │
+│  (collapsible)       │
+├──────────────────────┤
+│ [H2] Selected Work   │
+│ ┌──────────────────┐ │
+│ │ [IMG]            │ │
+│ │ [TITLE]          │ │
+│ │ [DESC]           │ │
+│ │ [TECH] [BTN →]   │ │
+│ └──────────────────┘ │
+│ ┌──────────────────┐ │
+│ │   (project 2)    │ │
+│ └──────────────────┘ │
+│ ┌──────────────────┐ │
+│ │   (project 3)    │ │
+│ └──────────────────┘ │
+│ [LINK: All →]        │
+├──────────────────────┤
+│ [H2] Got a project?  │
+│ [BTN-PRIMARY: Start] │
+├──────────────────────┤
+│ [FOOTER]             │
+│ socials: GH · LI · X │
+└──────────────────────┘</pre>
+  </div>
+</section>
+
+<!-- =================== PAGE 2: PROJECTS =================== -->
+<section class="page" data-page="projects">
+  <div class="page-head">
+    <span class="num">02</span>
+    <span class="title">PROJECTS</span>
+    <span class="tag">Full grid + filters</span>
+  </div>
+  <div class="page-body split">
+<pre class="ascii">┌──────────────────────────────────────────────────────────────────────────────┐
+│ [LOGO]      [NAV]                                  [BTN: Let's build →]    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   [H1] Projects.                                                             │
+│   [TEXT] A selection of recent work — case studies, side projects, OSS.      │
+│                                                                              │
+│   ░ FILTER BAR ░                                                             │
+│   [ All ] [ Web ] [ Mobile ] [ OSS ] [ Experiments ]    [ Sort: Newest ▾ ]   │
+│   ──────────────────────────────────────────────────────────────────────     │
+│                                                                              │
+│   ░ GRID — 3 columns × N rows ░                                              │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                       │
+│   │ [IMAGE]      │  │ [IMAGE]      │  │ [IMAGE]      │                       │
+│   │              │  │              │  │              │                       │
+│   ├──────────────┤  ├──────────────┤  ├──────────────┤                       │
+│   │ [TITLE]      │  │ [TITLE]      │  │ [TITLE]      │                       │
+│   │ [TAG][TAG]   │  │ [TAG][TAG]   │  │ [TAG][TAG]   │                       │
+│   │ [DESC 1ln]   │  │ [DESC 1ln]   │  │ [DESC 1ln]   │                       │
+│   │ [→]          │  │ [→]          │  │ [→]          │                       │
+│   └──────────────┘  └──────────────┘  └──────────────┘                       │
+│                                                                              │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                       │
+│   │   (4)        │  │   (5)        │  │   (6)        │                       │
+│   └──────────────┘  └──────────────┘  └──────────────┘                       │
+│                                                                              │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                       │
+│   │   (7)        │  │   (8)        │  │   (9)        │                       │
+│   └──────────────┘  └──────────────┘  └──────────────┘                       │
+│                                                                              │
+│                  [BTN-GHOST: Load more  ↓]                                   │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [FOOTER]                                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  ── MOBILE ───────────────────────
+  ┌────────────────────┐
+  │ [LOGO]    [☰]     │
+  ├────────────────────┤
+  │ [H1] Projects.     │
+  │ [filters: scroll →]│
+  │ [All][Web][Mob]... │
+  ├────────────────────┤
+  │ ┌────────────────┐ │
+  │ │ [IMG][TITLE]   │ │
+  │ │ [TAGS][DESC]   │ │
+  │ └────────────────┘ │  ◄── 1 col stack
+  │ ┌────────────────┐ │
+  │ │      (2)       │ │
+  │ └────────────────┘ │
+  │ [BTN: Load more]   │
+  └────────────────────┘</pre>
+    <aside class="notes">
+      <h3>UX notes — Projects</h3>
+      <ul>
+        <li><b>Filters</b> at top, persistent on scroll until grid begins.</li>
+        <li><b>Sort dropdown</b> on right (newest / featured / A–Z).</li>
+        <li><b>Grid</b>: 3 cols desktop → 2 cols tablet → 1 col mobile.</li>
+        <li><b>Load more</b> pagination (or infinite scroll — TBD).</li>
+        <li>Each card is one click target → opens case study.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- =================== PAGE 3: SERVICES & PRICING =================== -->
+<section class="page" data-page="services">
+  <div class="page-head">
+    <span class="num">03</span>
+    <span class="title">SERVICES &amp; PRICING</span>
+    <span class="tag">Service list + pricing tiers</span>
+  </div>
+  <div class="page-body split">
+<pre class="ascii">┌──────────────────────────────────────────────────────────────────────────────┐
+│ [LOGO]      [NAV]                                  [BTN: Let's build →]    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   [H1] Services.                                                             │
+│   [TEXT] What I help teams build — from prototype to production.             │
+│                                                                              │
+│   ░ SERVICE LIST — 2 columns ░                                               │
+│   ┌─────────────────────────────────┐  ┌─────────────────────────────────┐   │
+│   │ [ICON] [H3] Web Apps            │  │ [ICON] [H3] Design Systems      │   │
+│   │ [TEXT] description of service.  │  │ [TEXT] description.             │   │
+│   │ [LINK: learn more →]            │  │ [LINK: learn more →]            │   │
+│   └─────────────────────────────────┘  └─────────────────────────────────┘   │
+│   ┌─────────────────────────────────┐  ┌─────────────────────────────────┐   │
+│   │ [ICON] [H3] Prototypes / MVPs   │  │ [ICON] [H3] Performance Audits  │   │
+│   │ [TEXT] description.             │  │ [TEXT] description.             │   │
+│   │ [LINK: learn more →]            │  │ [LINK: learn more →]            │   │
+│   └─────────────────────────────────┘  └─────────────────────────────────┘   │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   [H2] Pricing.                                                              │
+│   [TEXT] Transparent tiers. Custom quotes for bigger scopes.                 │
+│                                                                              │
+│   ░ PRICING TIERS — 3 cards ░                                                │
+│   ┌──────────────────┐  ┌══════════════════┐  ┌──────────────────┐           │
+│   │ [TIER NAME]      │  ║ [TIER NAME]   ★  ║  │ [TIER NAME]      │           │
+│   │ Starter          │  ║ Pro              ║  │ Custom           │           │
+│   │                  │  ║ "Most popular"   ║  │                  │           │
+│   │ [PRICE] $$$      │  ║ [PRICE] $$$$     ║  │ [PRICE] Let's    │           │
+│   │ /project         │  ║ /project         ║  │   talk           │           │
+│   │ ──────────────── │  ║ ──────────────── ║  │ ──────────────── │           │
+│   │ ✓ feature 1      │  ║ ✓ feature 1      ║  │ ✓ everything in  │           │
+│   │ ✓ feature 2      │  ║ ✓ feature 2      ║  │   Pro            │           │
+│   │ ✓ feature 3      │  ║ ✓ feature 3      ║  │ ✓ dedicated time │           │
+│   │ — feature 4      │  ║ ✓ feature 4      ║  │ ✓ ongoing retain │           │
+│   │ — feature 5      │  ║ ✓ feature 5      ║  │ ✓ team training  │           │
+│   │                  │  ║                  ║  │                  │           │
+│   │ [BTN-GHOST:      │  ║ [BTN-PRIMARY:    ║  │ [BTN-GHOST:      │           │
+│   │  Get started]    │  ║  Get started]    ║  │  Contact me]     │           │
+│   └──────────────────┘  ╚══════════════════╝  └──────────────────┘           │
+│        (default)            (highlighted)         (custom quote)             │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ░ FAQ — accordion ░                                                        │
+│   ▸ How do projects start?                                                   │
+│   ▸ What's your timeline?                                                    │
+│   ▸ Do you take equity / part-time?                                          │
+│   ▸ Do you work with agencies?                                               │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [FOOTER]                                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  ── MOBILE ───────────────────────
+  ┌────────────────────┐
+  │ [H1] Services.     │
+  │ ┌────────────────┐ │
+  │ │ service card 1 │ │   ◄── 1 col
+  │ ├────────────────┤ │
+  │ │ service card 2 │ │
+  │ └────────────────┘ │
+  │ [H2] Pricing.      │
+  │ ┌────────────────┐ │
+  │ │ Starter        │ │
+  │ ├────────────────┤ │
+  │ │ Pro  ★         │ │  ◄── highlighted card stays first or sticky
+  │ ├────────────────┤ │
+  │ │ Custom         │ │
+  │ └────────────────┘ │
+  │ ▸ FAQ accordion    │
+  └────────────────────┘</pre>
+    <aside class="notes">
+      <h3>UX notes — Services &amp; Pricing</h3>
+      <ul>
+        <li><b>Two stacked sections</b>: Services (what), Pricing (how much).</li>
+        <li><b>Middle pricing tier highlighted</b> with ★ + bolder border + filled CTA.</li>
+        <li><b>FAQ</b> at the bottom answers objections before the contact step.</li>
+        <li>Each service card has its own anchor → enables deep-linking.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- =================== PAGE 4: BLOG =================== -->
+<section class="page" data-page="blog">
+  <div class="page-head">
+    <span class="num">04</span>
+    <span class="title">BLOG</span>
+    <span class="tag">Article list</span>
+  </div>
+  <div class="page-body split">
+<pre class="ascii">┌──────────────────────────────────────────────────────────────────────────────┐
+│ [LOGO]      [NAV]                                  [BTN: Let's build →]    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   [H1] Writing.                                                              │
+│   [TEXT] Notes on shipping, design engineering, and the dev tooling I love.  │
+│                                                                              │
+│   [SEARCH ▢_______________ ]   [Tags: All · Vue · Perf · DX · Career ]       │
+│   ──────────────────────────────────────────────────────────────────────     │
+│                                                                              │
+│   ░ FEATURED — full-width hero card ░                                        │
+│   ┌────────────────────────────────────────────────────────────────────┐     │
+│   │ [IMAGE — wide]                                                     │     │
+│   │ [TAG: featured]    [DATE]    [READ TIME 7 min]                     │     │
+│   │ [TITLE — large]                                                    │     │
+│   │ [EXCERPT 2 lines]                                                  │     │
+│   │ [BTN-GHOST: Read article →]                                        │     │
+│   └────────────────────────────────────────────────────────────────────┘     │
+│                                                                              │
+│   ░ ARTICLE LIST — list rows ░                                               │
+│   ┌────────────────────────────────────────────────────────────────────┐     │
+│   │ [DATE]  [TITLE]                              [TAGS]   [READ 5 min] │     │
+│   │ [EXCERPT 1 line]                                                   │     │
+│   ├────────────────────────────────────────────────────────────────────┤     │
+│   │ [DATE]  [TITLE]                              [TAGS]   [READ 4 min] │     │
+│   │ [EXCERPT 1 line]                                                   │     │
+│   ├────────────────────────────────────────────────────────────────────┤     │
+│   │ [DATE]  [TITLE]                              [TAGS]   [READ 6 min] │     │
+│   │ [EXCERPT 1 line]                                                   │     │
+│   ├────────────────────────────────────────────────────────────────────┤     │
+│   │ [DATE]  [TITLE]                              [TAGS]   [READ 3 min] │     │
+│   │ [EXCERPT 1 line]                                                   │     │
+│   ├────────────────────────────────────────────────────────────────────┤     │
+│   │ [DATE]  [TITLE]                              [TAGS]   [READ 9 min] │     │
+│   │ [EXCERPT 1 line]                                                   │     │
+│   └────────────────────────────────────────────────────────────────────┘     │
+│                                                                              │
+│                  [BTN-GHOST: Older posts →]                                  │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│   ░ NEWSLETTER STRIP ░                                                       │
+│   [H3] Get new posts in your inbox.                                          │
+│   [INPUT email________________ ]   [BTN-PRIMARY: Subscribe]                  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [FOOTER]                                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  ── MOBILE ───────────────────────
+  ┌────────────────────┐
+  │ [H1] Writing.      │
+  │ [SEARCH]           │
+  │ [tags scroll →]    │
+  │ ┌────────────────┐ │
+  │ │ FEATURED       │ │
+  │ │ [IMG][TITLE]   │ │
+  │ └────────────────┘ │
+  │ ─── articles ───   │
+  │ [DATE] [TITLE]     │
+  │ [excerpt]          │
+  │ ─────────────────  │
+  │ [DATE] [TITLE]     │
+  │ [excerpt]          │
+  │ ─────────────────  │
+  │ ...                │
+  │ [Older posts →]    │
+  │ [Newsletter]       │
+  └────────────────────┘</pre>
+    <aside class="notes">
+      <h3>UX notes — Blog</h3>
+      <ul>
+        <li><b>List layout</b> chosen over cards — denser, scannable, dev-audience-friendly.</li>
+        <li><b>One featured hero</b> at top breaks the rhythm.</li>
+        <li><b>Search + tags</b> persistent above the fold.</li>
+        <li><b>Newsletter strip</b> sits before footer — final CTA before exit.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- =================== PAGE 5: CONTACT =================== -->
+<section class="page" data-page="contact">
+  <div class="page-head">
+    <span class="num">05</span>
+    <span class="title">CONTACT</span>
+    <span class="tag">Form + socials</span>
+  </div>
+  <div class="page-body split">
+<pre class="ascii">┌──────────────────────────────────────────────────────────────────────────────┐
+│ [LOGO]      [NAV]                                  [BTN: Let's build →]    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ░ 2-COL LAYOUT ░                                                           │
+│   ┌──────────────────────────────────┐  ┌──────────────────────────────┐     │
+│   │ [H1] Let's build                 │  │ [H3] Other ways              │     │
+│   │      something.                  │  │ ──────────────────────────── │     │
+│   │                                  │  │ [LINK] <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dfb7bab3b3b09fbbb0b2beb6b1f1bbbaa9">[email&#160;protected]</a>      │     │
+│   │ [TEXT] Tell me about your        │  │ [LINK] book a 20-min call ↗  │     │
+│   │ project. I reply within 1–2      │  │                              │     │
+│   │ business days.                   │  │ [H3] Find me                 │     │
+│   │                                  │  │ ──────────────────────────── │     │
+│   │ ░ FORM ░                         │  │ [SOCIAL] GitHub        ↗     │     │
+│   │ [LABEL: Name]                    │  │ [SOCIAL] LinkedIn      ↗     │     │
+│   │ [INPUT ▢________________ ]       │  │ [SOCIAL] X / Twitter   ↗     │     │
+│   │                                  │  │ [SOCIAL] Read.cv       ↗     │     │
+│   │ [LABEL: Email]                   │  │ [SOCIAL] Mastodon      ↗     │     │
+│   │ [INPUT ▢________________ ]       │  │                              │     │
+│   │                                  │  │ [H3] Status                  │     │
+│   │ [LABEL: Project type]            │  │ ──────────────────────────── │     │
+│   │ [SELECT ▾ Web / Mobile / Other ] │  │ ● Available — May 2026       │     │
+│   │                                  │  │ ○ Booked — Jun 2026          │     │
+│   │ [LABEL: Message]                 │  │                              │     │
+│   │ ┌──────────────────────────────┐ │  │ [META]                       │     │
+│   │ │                              │ │  │ Based in [CITY]              │     │
+│   │ │ [TEXTAREA — 6 rows]          │ │  │ Working in [TZ]              │     │
+│   │ │                              │ │  │                              │     │
+│   │ └──────────────────────────────┘ │  └──────────────────────────────┘     │
+│   │                                  │                                       │
+│   │ [CHECKBOX] Subscribe to news     │                                       │
+│   │                                  │                                       │
+│   │ [BTN-PRIMARY: Send message →]    │                                       │
+│   │ [HINT] or just email me direct.  │                                       │
+│   └──────────────────────────────────┘                                       │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [FOOTER]                                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+  ── MOBILE ───────────────────────
+  ┌────────────────────┐
+  │ [H1] Let's build   │
+  │      something.    │
+  │ [TEXT] reply 1–2d. │
+  │ ── FORM ──         │
+  │ [Name ▢________]   │
+  │ [Email ▢_______]   │
+  │ [Type  ▾_______]   │
+  │ [Message]          │
+  │ ┌────────────────┐ │
+  │ │ textarea       │ │
+  │ └────────────────┘ │
+  │ [☐] subscribe      │
+  │ [BTN: Send →]      │
+  │ ── Other ways ──   │
+  │ • email            │
+  │ • book a call      │
+  │ ── Socials ──      │
+  │ GH · LI · X · ...  │
+  │ ● Available May    │
+  └────────────────────┘</pre>
+    <aside class="notes">
+      <h3>UX notes — Contact</h3>
+      <ul>
+        <li><b>Form on left, alternatives on right</b> — never trap users in one path.</li>
+        <li><b>Project-type select</b> pre-qualifies leads.</li>
+        <li><b>Status indicator</b> (available / booked) sets expectations.</li>
+        <li><b>Reply SLA</b> is stated up front (1–2 business days).</li>
+        <li>Form labels are visible (not placeholder-only) for accessibility.</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<div class="legend">
+  <b>Label legend</b>
+  <div class="row">
+    <span><code>[H1]</code> primary heading</span>
+    <span><code>[H2]/[H3]</code> section/sub heading</span>
+    <span><code>[TEXT]</code> body copy</span>
+    <span><code>[BTN-PRIMARY]</code> filled CTA</span>
+    <span><code>[BTN-GHOST]</code> outlined CTA</span>
+    <span><code>[LINK]</code> inline link</span>
+    <span><code>[INPUT]</code> form field</span>
+    <span><code>[IMAGE]</code> image placeholder</span>
+    <span><code>[TAG]</code> pill / chip</span>
+    <span><code>[NAV]</code> nav links</span>
+    <span><code>░</code> region marker</span>
+    <span><code>★</code> highlighted item</span>
+  </div>
+</div>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const TWEAK_DEFAULS = /*EDITMODE-BEGIN*/{
+  "view": "all",
+  "showMobile": false,
+  "showNotes": true
+}/*EDITMODE-END*/;
+
+const PAGES = [
+  { id: 'all',          label: 'All'           },
+  { id: 'home',         label: '01 Home'       },
+  { id: 'home-mobile',  label: '01·m Mobile'   },
+  { id: 'projects',     label: '02 Projects'   },
+  { id: 'services',     label: '03 Services'   },
+  { id: 'blog',         label: '04 Blog'       },
+  { id: 'contact',      label: '05 Contact'    },
+];
+
+function applyView(view, showMobile, showNotes) {
+  document.querySelectorAll('.page').forEach(el => {
+    const id = el.dataset.page;
+    const isMobile = id.endsWith('-mobile');
+    let visible = (view === 'all') ? true : (id === view || (view !== 'home-mobile' && id === view));
+    if (view === 'all' && isMobile && !showMobile) visible = false;
+    el.classList.toggle('hidden', !visible);
+  });
+  document.querySelectorAll('.notes').forEach(el => {
+    el.style.display = showNotes ? '' : 'none';
+  });
+  document.querySelectorAll('.page-body.split').forEach(el => {
+    el.style.gridTemplateColumns = showNotes ? '' : '1fr';
+  });
+}
+
+function TocBar({ view, setView }) {
+  return (
+    <>
+      {PAGES.map(p => (
+        <button
+          key={p.id}
+          className={view === p.id ? 'active' : ''}
+          onClick={() => setView(p.id)}
+        >{p.label}</button>
+      ))}
+    </>
+  );
+}
+
+function App() {
+  const [tweaks, setTweak] = window.useTweaks
+    ? window.useTweaks(TWEAK_DEFAULS)
+    : [TWEAK_DEFAULS, () => {}];
+
+  useEffect(() => {
+    applyView(tweaks.view, tweaks.showMobile, tweaks.showNotes);
+  }, [tweaks.view, tweaks.showMobile, tweaks.showNotes]);
+
+  const TP = window.TweaksPanel;
+  const TS = window.TweakSection;
+  const TR = window.TweakRadio;
+  const TT = window.TweakToggle;
+
+  return (
+    <>
+      <div style={{display:'contents'}}>
+        <TocBarMount view={tweaks.view} setView={(v)=>setTweak('view', v)} />
+      </div>
+      {TP && (
+        <TP title="Tweaks">
+          <TS title="View">
+            <TR
+              label="Page"
+              value={tweaks.view}
+              onChange={(v)=>setTweak('view', v)}
+              options={PAGES.map(p => ({ value: p.id, label: p.label }))}
+            />
+          </TS>
+          <TS title="Display">
+            <TT label="Show mobile stacks" value={tweaks.showMobile} onChange={(v)=>setTweak('showMobile', v)} />
+            <TT label="Show UX notes panel" value={tweaks.showNotes} onChange={(v)=>setTweak('showNotes', v)} />
+          </TS>
+        </TP>
+      )}
+    </>
+  );
+}
+
+function TocBarMount({ view, setView }) {
+  useEffect(() => {
+    const host = document.getElementById('toc');
+    if (!host) return;
+    host.innerHTML = '';
+    const root = ReactDOM.createRoot(host);
+    root.render(<TocBar view={view} setView={setView} />);
+    return () => root.unmount();
+  }, [view, setView]);
+  return null;
+}
+
+// Boot
+const mount = document.createElement('div');
+document.body.appendChild(mount);
+ReactDOM.createRoot(mount).render(<App />);
+
+// Initial apply (in case Tweaks panel not yet ready)
+applyView(TWEAK_DEFAULS.view, TWEAK_DEFAULS.showMobile, TWEAK_DEFAULS.showNotes);
+</script>
+
+</body>
+</html>
