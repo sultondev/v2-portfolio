@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import type { BlogPaginationEmits } from '~/types/blog-pagination'
+
 const props = defineProps<{
   page: number
   totalPages: number
 }>()
 
-const emit = defineEmits<{
-  change: [page: number]
-}>()
+const emit = defineEmits<BlogPaginationEmits>()
 
 const { t } = useI18n()
 

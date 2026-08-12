@@ -1,36 +1,23 @@
 <script setup lang="ts">
-interface Option {
-  value: string
-  label: string
-}
+import type { DropdownEmits, DropdownProps } from '~/types/dropdown'
 
-const props = withDefaults(defineProps<{
-  value: string
-  options: Option[]
-  label?: string
-  block?: boolean
-}>(), {
-  label: '',
-  block: false,
-})
+const { value, options, label = '', block = false } = defineProps<DropdownProps>()
 
-const emit = defineEmits<{
-  change: [value: string]
-}>()
+const emit = defineEmits<DropdownEmits>()
 
 const open = ref(false)
 const triggerRef = ref<HTMLButtonElement | null>(null)
 const menuRef = ref<HTMLUListElement | null>(null)
 const focusedIdx = ref(-1)
 
-const selectedLabel = computed(() => props.options.find(o => o.value === props.value)?.label ?? props.value)
+const selectedLabel = computed(() => options.find(o => o.value === value)?.label ?? value)
 
 const close = () => { open.value = false; focusedIdx.value = -1 }
 
 const toggle = () => {
   open.value = !open.value
   if (open.value) {
-    focusedIdx.value = props.options.findIndex(o => o.value === props.value)
+    focusedIdx.value = options.findIndex(o => o.value === value)
     nextTick(() => menuRef.value?.focus())
   }
 }
@@ -43,9 +30,9 @@ const select = (v: string) => {
 
 const onKey = (e: KeyboardEvent) => {
   if (!open.value) return
-  if (e.key === 'ArrowDown') { e.preventDefault(); focusedIdx.value = Math.min(focusedIdx.value + 1, props.options.length - 1) }
+  if (e.key === 'ArrowDown') { e.preventDefault(); focusedIdx.value = Math.min(focusedIdx.value + 1, options.length - 1) }
   if (e.key === 'ArrowUp') { e.preventDefault(); focusedIdx.value = Math.max(focusedIdx.value - 1, 0) }
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (focusedIdx.value >= 0) select(props.options[focusedIdx.value]!.value) }
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (focusedIdx.value >= 0) select(options[focusedIdx.value]!.value) }
   if (e.key === 'Escape') { close(); triggerRef.value?.focus() }
 }
 
