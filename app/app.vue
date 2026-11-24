@@ -1,6 +1,13 @@
 <script setup lang="ts">
 const { locale } = useI18n()
-useHead({ htmlAttrs: { lang: locale } })
+const { theme } = useTheme()
+// null theme = follow the OS: the attribute is omitted and CSS uses prefers-color-scheme
+useHead({
+  htmlAttrs: {
+    'lang': locale,
+    'data-theme': theme,
+  },
+})
 </script>
 
 <template>

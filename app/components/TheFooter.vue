@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const navPages = ['home', 'projects', 'services', 'blog', 'contact']
+const navPages = ['home', 'projects', 'services', 'blog', 'photos', 'contact']
 const pageToPath = (p: string) => p === 'home' ? '/' : `/${p}`
 </script>
 

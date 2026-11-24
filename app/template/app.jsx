@@ -792,7 +792,19 @@ function ContactPage() {
 }
 
 // === Layout shell ===
-function Nav({ route, setRoute }) {
+function ThemeToggle({ theme, onToggle, className = "" }) {
+  const t = window.useT();
+  const isDark = theme === "dark";
+  return (
+    <button type="button" className={"theme-toggle " + className} onClick={onToggle}
+      aria-label={isDark ? t("theme.to_light") : t("theme.to_dark")} title={isDark ? t("theme.to_light") : t("theme.to_dark")}>
+      {isDark ?
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg> :
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"></path></svg>}
+    </button>);
+}
+
+function Nav({ route, setRoute, theme, toggleTheme }) {
   const t = window.useT();
   const [open, setOpen] = useState(false);
   const items = [
@@ -800,6 +812,7 @@ function Nav({ route, setRoute }) {
   { id: "projects", k: "nav.projects" },
   { id: "services", k: "nav.services" },
   { id: "blog", k: "nav.blog" },
+  { id: "photos", k: "nav.photos" },
   { id: "contact", k: "nav.contact" }];
 
   const LangSwitcher = window.LangSwitcher;
@@ -826,8 +839,8 @@ function Nav({ route, setRoute }) {
           )}
         </div>
         <div className="nav-right">
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
           {LangSwitcher && <LangSwitcher />}
-          <a href="#contact" onClick={(e) => {e.preventDefault();setRoute("contact");}} className="btn btn-primary btn-sm cta-desktop">{t("cta.lets_build")} <span className="arrow">→</span></a>
           <button
             type="button"
             className={"hamburger" + (open ? " open" : "")}
@@ -854,7 +867,7 @@ function Nav({ route, setRoute }) {
             )}
           </ul>
           <div className="mm-foot">
-            {LangSwitcher && <div className="mm-lang"><LangSwitcher /></div>}
+            {LangSwitcher && <div className="mm-lang"><LangSwitcher variant="inline" /></div>}
             <a href="#contact" onClick={(e) => { e.preventDefault(); setRoute("contact"); }} className="btn btn-primary">{t("cta.lets_build")} <span className="arrow">→</span></a>
           </div>
         </div>
@@ -879,7 +892,7 @@ function Footer({ setRoute }) {
         </a>
       </div>
       <div className="col-mid">
-        {["home", "projects", "services", "blog", "contact"].map((p) =>
+        {["home", "projects", "services", "blog", "photos", "contact"].map((p) =>
         <a key={p} href={"#" + p} onClick={(e) => {e.preventDefault();setRoute(p);}}>/{p}</a>
         )}
       </div>
@@ -1054,7 +1067,7 @@ function ProjectDetail({ p, onClose }) {
 function App() {
   const [route, setRoute] = useState(() => {
     const h = window.location.hash.slice(1);
-    return ["home", "projects", "services", "blog", "contact"].includes(h) ? h : "home";
+    return ["home", "projects", "services", "blog", "photos", "contact"].includes(h) ? h : "home";
   });
   const [openProject, setOpenProject] = useState(null);
   const [openPost, setOpenPost] = useState(null);
@@ -1100,19 +1113,58 @@ function App() {
     document.documentElement.setAttribute("data-route", route);
   }, [route, openProject]);
 
-  // tweak vars
-  useEffect(() => {
+  // theme
+  const [theme, setTheme] = useState(() => document.documentElement.getAttribute("data-theme") || "dark");
+  React.useLayoutEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem("sulton.theme", theme); } catch (e) {}
+  }, [theme]);
+  const toggleTheme = (e) => {
     const r = document.documentElement;
-    r.style.setProperty("--accent", tweaks.accent);
+    const next = theme === "dark" ? "light" : "dark";
+    const btn = e && e.currentTarget ? e.currentTarget.getBoundingClientRect() : null;
+    const x = btn ? btn.left + btn.width / 2 : window.innerWidth - 60;
+    const y = btn ? btn.top + btn.height / 2 : 30;
+    const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!document.startViewTransition || reduce || !tweaks.motion) {
+      r.classList.add("theme-anim");
+      setTimeout(() => r.classList.remove("theme-anim"), 400);
+      setTheme(next);
+      return;
+    }
+    // water drop: ripple rings at the source
+    const drop = document.createElement("div");
+    drop.className = "theme-drop";
+    drop.style.left = x + "px"; drop.style.top = y + "px";
+    drop.innerHTML = "<i></i><i></i><i></i>";
+    document.body.appendChild(drop);
+    setTimeout(() => drop.remove(), 1600);
+    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    const vt = document.startViewTransition(() => { ReactDOM.flushSync(() => setTheme(next)); });
+    vt.ready.then(() => {
+      r.animate(
+        { clipPath: ["circle(0px at " + x + "px " + y + "px)", "circle(" + (radius * 0.18) + "px at " + x + "px " + y + "px)", "circle(" + radius + "px at " + x + "px " + y + "px)"], offset: [0, 0.22, 1] },
+        { duration: 1100, easing: "cubic-bezier(.65,0,.25,1)", pseudoElement: "::view-transition-new(root)" }
+      );
+    });
+  };
+
+  // tweak vars
+  React.useLayoutEffect(() => {
+    const r = document.documentElement;
     const m = (tweaks.accent || "#7CFF6B").match(/^#?([0-9a-f]{6})$/i);
     if (m) {
-      const v = m[1];
-      const rgb = [0, 2, 4].map((i) => parseInt(v.slice(i, i + 2), 16)).join(" ");
-      r.style.setProperty("--accent-glow", rgb);
+      let rgb = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16));
+      // light theme: deepen bright accents so they read on a light ground
+      if (theme === "light") rgb = rgb.map((c) => Math.round(c * 0.58));
+      r.style.setProperty("--accent", "rgb(" + rgb.join(",") + ")");
+      r.style.setProperty("--accent-glow", rgb.join(" "));
+    } else {
+      r.style.setProperty("--accent", tweaks.accent);
     }
     r.style.setProperty("--cyber", String((tweaks.cyber ?? 4) / 10));
     document.body.setAttribute("data-motion", tweaks.motion ? "1" : "0");
-  }, [tweaks.accent, tweaks.cyber, tweaks.motion]);
+  }, [tweaks.accent, tweaks.cyber, tweaks.motion, theme]);
 
   // intersection reveal
   useEffect(() => {
@@ -1130,7 +1182,7 @@ function App() {
   // capture data-route links inside body (e.g. CTAs)
   useEffect(() => {
     const handler = (e) => {
-      const a = e.target.closest("[data-route]");
+      const a = e.target.closest("a[data-route], button[data-route]");
       if (!a) return;
       const r = a.getAttribute("data-route");
       if (r) {e.preventDefault();setRoute(r);}
@@ -1147,13 +1199,14 @@ function App() {
 
   return (
     <>
-      <Nav route={route} setRoute={setRoute} />
+      <Nav route={route} setRoute={setRoute} theme={theme} toggleTheme={toggleTheme} />
       <main>
         <div className={"route " + (route === "home" ? "active" : "")} data-screen-label="01 Home"><HomePage onOpenProject={handleOpenProject} /></div>
         <div className={"route " + (route === "projects" ? "active" : "")} data-screen-label="02 Projects"><ProjectsPage onOpenProject={handleOpenProject} /></div>
         <div className={"route " + (route === "services" ? "active" : "")} data-screen-label="03 Services"><ServicesPage /></div>
         <div className={"route " + (route === "blog" ? "active" : "")} data-screen-label="04 Blog"><BlogPage onOpenPost={handleOpenPost} /></div>
-        <div className={"route " + (route === "contact" ? "active" : "")} data-screen-label="05 Contact"><ContactPage /></div>
+        <div className={"route " + (route === "photos" ? "active" : "")} data-screen-label="05 Photos">{window.PhotosPage && <window.PhotosPage />}</div>
+        <div className={"route " + (route === "contact" ? "active" : "")} data-screen-label="06 Contact"><ContactPage /></div>
         <div className={"route " + (route === "project" ? "active" : "")} data-screen-label={"P· " + (openProject ? openProject.title : "")}><ProjectDetail p={openProject} onClose={handleCloseProject} /></div>
         <div className={"route " + (route === "post" ? "active" : "")} data-screen-label={"B· " + (openPost ? openPost.slug : "")}><BlogDetail p={openPost} onClose={handleClosePost} onOpenPost={handleOpenPost} /></div>
       </main>

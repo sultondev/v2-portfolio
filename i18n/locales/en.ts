@@ -4,6 +4,7 @@ export default {
     projects: 'Projects',
     services: 'Services',
     blog: 'Blog',
+    photos: 'Photos',
     contact: 'Contact',
   },
   cta: {
@@ -215,6 +216,35 @@ export default {
     jun: 'Jun 2026',
     julaug: 'Jul–Aug 2026',
     based: 'BASED IN BERLIN · WORKING UTC+1 · LATAM/EU FRIENDLY',
+  },
+  lang: {
+    label: 'Language',
+  },
+  theme: {
+    to_light: 'Switch to light theme',
+    to_dark: 'Switch to dark theme',
+  },
+  photos: {
+    h1: 'Off-screen.',
+    lead: 'What I see when I step away from the editor — Tashkent streets, Silk Road tilework, Berlin winters and the occasional desk at 2am.',
+    frames: 'frames',
+    cities: 'cities',
+    drop: 'Photo coming soon',
+    open: 'Open',
+    close: 'Close',
+    empty: 'Photo coming soon — this frame is still empty.',
+    date: 'Date',
+    camera: 'Camera',
+    lens: 'Lens',
+    exposure: 'Exposure',
+    g: {
+      all: 'All',
+      tashkent: 'Tashkent',
+      silkroad: 'Silk Road',
+      berlin: 'Berlin',
+      mountains: 'Mountains',
+      desk: 'Desk',
+    },
   },
   pg: {
     prev: 'Prev',

@@ -4,6 +4,7 @@ export default {
     projects: 'Projekte',
     services: 'Services',
     blog: 'Blog',
+    photos: 'Fotos',
     contact: 'Kontakt',
   },
   cta: {
@@ -215,6 +216,35 @@ export default {
     jun: 'Juni 2026',
     julaug: 'Jul–Aug 2026',
     based: 'BERLIN · UTC+1 · LATAM/EU FREUNDLICH',
+  },
+  lang: {
+    label: 'Sprache',
+  },
+  theme: {
+    to_light: 'Helles Design',
+    to_dark: 'Dunkles Design',
+  },
+  photos: {
+    h1: 'Abseits des Bildschirms.',
+    lead: 'Was ich sehe, wenn ich den Editor verlasse — Straßen in Taschkent, Kacheln der Seidenstraße, Berliner Winter und ab und zu der Schreibtisch um 2 Uhr nachts.',
+    frames: 'Bilder',
+    cities: 'Städte',
+    drop: 'Foto folgt in Kürze',
+    open: 'Öffnen',
+    close: 'Schließen',
+    empty: 'Foto folgt in Kürze — dieser Rahmen ist noch leer.',
+    date: 'Datum',
+    camera: 'Kamera',
+    lens: 'Objektiv',
+    exposure: 'Belichtung',
+    g: {
+      all: 'Alle',
+      tashkent: 'Taschkent',
+      silkroad: 'Seidenstraße',
+      berlin: 'Berlin',
+      mountains: 'Berge',
+      desk: 'Schreibtisch',
+    },
   },
   pg: {
     prev: 'Zurück',

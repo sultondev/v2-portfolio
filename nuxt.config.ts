@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: [ '@vercel/analytics', '@nuxtjs/i18n'],
+  modules: ['@vercel/analytics', '@nuxtjs/i18n', '@nuxt/icon'],
 
   i18n: {
     locales: [
