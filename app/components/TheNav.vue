@@ -8,6 +8,7 @@ const navItems = [
   { id: 'projects', key: 'nav.projects', path: '/projects' },
   { id: 'services', key: 'nav.services', path: '/services' },
   { id: 'blog', key: 'nav.blog', path: '/blog' },
+  { id: 'photos', key: 'nav.photos', path: '/photos' },
   { id: 'contact', key: 'nav.contact', path: '/contact' },
 ]
 
@@ -43,10 +44,8 @@ const isActive = (path: string) =>
       </div>
 
       <div class="nav-right">
-        <UiLangSwitcher class="lang-switcher-desktop" />
-        <NuxtLink to="/contact" class="btn btn-primary btn-sm cta-desktop">
-          {{ t('cta.lets_build') }} <span class="arrow">→</span>
-        </NuxtLink>
+        <ThemeToggle />
+        <UiLangSwitcher />
         <button
           type="button"
           :class="['hamburger', { open: mobileOpen }]"
@@ -79,7 +78,7 @@ const isActive = (path: string) =>
         </ul>
         <div class="mm-foot">
           <div class="mm-lang">
-            <UiLangSwitcher />
+            <UiLangSwitcher variant="inline" />
           </div>
           <NuxtLink to="/contact" class="btn btn-primary">
             {{ t('cta.lets_build') }} <span class="arrow">→</span>

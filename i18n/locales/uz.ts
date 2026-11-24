@@ -4,6 +4,7 @@ export default {
     projects: 'Loyihalar',
     services: 'Xizmatlar',
     blog: 'Blog',
+    photos: 'Suratlar',
     contact: 'Aloqa',
   },
   cta: {
@@ -215,6 +216,35 @@ export default {
     jun: 'Iyun 2026',
     julaug: 'Iyul–Avg 2026',
     based: 'BERLINDA · UTC+1 · LATAM/EU GA QULAY',
+  },
+  lang: {
+    label: 'Til',
+  },
+  theme: {
+    to_light: 'Yorug‘ mavzuga o‘tish',
+    to_dark: 'Qorong‘i mavzuga o‘tish',
+  },
+  photos: {
+    h1: 'Ekrandan tashqarida.',
+    lead: 'Muharrirdan uzoqlashganimda ko‘rganlarim — Toshkent ko‘chalari, Ipak yo‘li koshinlari, Berlin qishi va ba’zan tungi ikkidagi stol.',
+    frames: 'kadr',
+    cities: 'shahar',
+    drop: 'Surat tez orada',
+    open: 'Ochish',
+    close: 'Yopish',
+    empty: 'Surat tez orada — bu ramka hozircha bo‘sh.',
+    date: 'Sana',
+    camera: 'Kamera',
+    lens: 'Obyektiv',
+    exposure: 'Ekspozitsiya',
+    g: {
+      all: 'Barchasi',
+      tashkent: 'Toshkent',
+      silkroad: 'Ipak yo‘li',
+      berlin: 'Berlin',
+      mountains: 'Tog‘lar',
+      desk: 'Ish stoli',
+    },
   },
   pg: {
     prev: 'Oldingi',
