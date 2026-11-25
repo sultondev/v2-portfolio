@@ -5,48 +5,46 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-pnpm dev          # start dev server at http://localhost:3000
+pnpm dev          # dev server at http://localhost:3000
 pnpm build        # production build
 pnpm generate     # static site generation
 pnpm preview      # preview production build
-pnpm postinstall  # run after install (nuxt prepare)
 ```
 
-Package manager is **pnpm** (v10.33). Do not use npm or yarn.
+Package manager is **pnpm** (v10.33) — do not use npm or yarn (the README is the stock Nuxt starter and lists them; ignore that). There is no lint or test setup.
 
 ## Architecture
 
-This is a **Nuxt 4** portfolio site. The Nuxt app lives under `app/` (Nuxt 4 layout). Currently `app/app.vue` renders the default `<NuxtWelcome />` placeholder — the real UI is being migrated from a vanilla-React prototype.
+**Nuxt 4** personal portfolio (sulton.dev), source under `app/`. Modules: `@nuxtjs/i18n`, `@vercel/analytics`. File-based routing in `app/pages/`: home, `projects/` (+ `[slug]`), `services`, `blog/` (+ `[slug]`), `contact`. Everything renders through `layouts/default.vue` (nav, footer, client-only `TweaksPanel`).
 
-### The prototype (`app/template/`)
+### Data layer: mock vs API
 
-The actual portfolio content lives as a standalone no-bundler prototype in `app/template/`. It loads React, ReactDOM, and Babel via CDN and uses raw `.jsx` files. This prototype is the source of truth for:
+Pages never import data directly — they go through `useProjectsData()` / `usePostsData()` composables. These check `runtimeConfig.public.useMockData` (string `'true'`, override with `NUXT_PUBLIC_USE_MOCK_DATA=false`) and either return arrays from `app/data/mock/*.ts` or `$fetch` from `/api/projects…` / `/api/posts…`. **No `server/` API exists yet**, so mock mode is the only working mode. When adding a fetch method, implement both branches.
 
-- **`app.jsx`** — entire SPA: all pages, components, routing (hash-based), and the `PROJECTS`/`POSTS` data arrays
-- **`i18n.jsx`** — i18n system: `window.I18N` dictionary, `window.useT()` hook, `window.LangProvider`, `window.LangSwitcher`. Supports EN / UZ / RU / DE
-- **`dropdown.jsx`** — accessible custom `<Dropdown>` component, exported to `window.Dropdown`
-- **`tweaks-panel.jsx`** — live-editing panel (`window.TweaksPanel`, `window.TweakSection`, etc.) for accent color, cyberpunk atmosphere, and motion toggle
-- **`styles.css`** — all CSS for the prototype
-- **`Portfolio Wireframes.html`** / **`Portfolio Hi-Fi.html`** — standalone HTML files that load the prototype scripts
+Types live in `app/types/`, string enums (`ProjectCategory`, `ProjectStatus`) in `app/enums/project.ts`.
 
-### Routing (prototype)
+### i18n
 
-Hash-based SPA with routes: `home`, `projects`, `services`, `blog`, `contact`, `project` (detail), `post` (detail). The `App` component holds state (`route`, `openProject`, `openPost`) and renders all routes simultaneously, toggling `.active` CSS class on `.route` divs.
+`@nuxtjs/i18n` with locales en / uz / ru / de in `i18n/locales/*.ts`, `strategy: 'no_prefix'` (no locale in URLs; choice stored in cookie `sulton.lang`). Use `const { t } = useI18n()` and `t('key', { n })`. Every new key must be added to all four locale files (they are kept line-for-line parallel).
 
-### Data model
-
-`PROJECTS` array in `app.jsx` — 15 projects, each with: `id`, `slug`, `num`, `name`, `title`, `tagline`, `summary`, `body[]`, `tech[]`, `category` (`web`|`tooling`|`oss`|`experiments`), `role`, `client`, `year`, `status` (`shipped`|`in-progress`|`archived`), `featured`, `accent` (CSS color), `cover` (`{kind, palette, glyph}`), `links`, `metrics[]`.
-
-`POSTS` array — 16 blog posts, titles and body text stored in `window.I18N` (keys: `post.N.t`, `post.N.x`, `post.N.b1–b3`).
-
-### i18n pattern
-
-All user-visible text uses `const t = window.useT()` then `{t("key")}`. String interpolation: `t("key", { n: value })` replaces `{n}` in the string. All translation keys are in `app/template/i18n.jsx`.
+Blog post text is **not** in `posts.ts` — mock posts carry `titleKey` / `excerptKey` pointing to `post.<id>.t` / `post.<id>.x`, and body paragraphs are `post.<id>.b1–b3` (only posts with `hasBody: true` have them). Project content, by contrast, is plain English strings in `projects.ts`.
 
 ### Tweaks system
 
-The `App` component reads from `window.useTweaks` (injected by the tweaks panel) for live-editable values: `accent` (CSS color), `cyber` (0–10 integer), `motion` (boolean). CSS custom properties `--accent`, `--accent-glow`, `--cyber` are updated on change. `data-motion` attribute on `<body>` controls scroll-reveal behavior.
+Live-editable visual settings (`accent` color, `cyber` 0–10, `motion` boolean; defaults/presets in `app/types/tweaks.ts`) are held in `useState('tweaks')` via `useTweaks()`. `plugins/tweaks.client.ts` watches them and writes CSS custom properties on `<html>`: `--accent`, `--accent-glow` (space-separated RGB derived from a 6-digit hex), `--cyber` (0–1), plus `data-motion` on `<html>`/`<body>`.
 
-### CSS variables (key ones)
+Scroll reveal: the default layout attaches an IntersectionObserver to every `.reveal` element on each route change and adds `.in` when visible; with motion off it adds `.in` immediately. New animated sections just need the `reveal` class.
 
-`--accent` — per-site accent color (default `#7CFF6B`). `--cyber` — cyberpunk atmosphere (0–1 float). `--c1`/`--c2`/`--accent` on `.proj-cover` — per-project palette injected as inline style.
+### Styling
+
+All styles are global in `app/assets/css/main.css` (no scoped styles / no CSS framework). Fonts are Geist / Geist Mono from Google Fonts (configured in `nuxt.config.ts`). `ProjectCover.vue` sets `--c1`/`--c2`/`--accent` inline per project from `project.cover.palette` and `project.accent`, and switches artwork on `cover.kind`.
+
+### `app/template/` — Claude Design export (design source of truth)
+
+The owner designs in Claude Design and exports it as no-bundler React (CDN React + Babel: `app.jsx`, `i18n.jsx`, `dropdown.jsx`, `tweaks-panel.jsx`, `styles.css`, standalone HTML files), overwriting this folder on each update. It is not part of the build — never edit or import it. When it changes, port the changes into the Vue app (diff with `git diff -- app/template`). The `portfolio-frontend` skill has the export → Vue file mapping and the React → Vue translation rules.
+
+### Agents
+
+`.claude/agents/`: `frontend-developer` (implements), `frontend-reviewer` (read-only review, returns a verdict), `orchestrator` (plans, delegates to both, loops until approved; run it as the main agent with `claude --agent orchestrator`). All preload the `portfolio-frontend` skill.
+
+Skills in `.claude/skills/`: `portfolio-frontend` (house rules + design sync), `backend-api-prompt` (generates a detailed API prompt for a back-end AI from the UI's types, mocks and composables → `docs/backend-api-prompt/NNN-name.md`).

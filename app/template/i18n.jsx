@@ -12,6 +12,7 @@ window.I18N = {
   "nav.projects": { en: "Projects",   uz: "Loyihalar",   ru: "Проекты",    de: "Projekte" },
   "nav.services": { en: "Services",   uz: "Xizmatlar",   ru: "Услуги",     de: "Services" },
   "nav.blog":     { en: "Blog",       uz: "Blog",        ru: "Блог",       de: "Blog" },
+  "nav.photos":   { en: "Photos",     uz: "Suratlar",    ru: "Фото",       de: "Fotos" },
   "nav.contact":  { en: "Contact",    uz: "Aloqa",       ru: "Контакты",   de: "Kontakt" },
 
   "cta.lets_build":  { en: "Let’s build", uz: "Boshlaymiz", ru: "Давайте построим", de: "Lass uns bauen" },
@@ -297,6 +298,26 @@ window.I18N = {
   "post.16.x": { en: "It’s not about the framework. It’s about the constraints.", uz: "Gap framework haqida emas. Gap cheklovlar haqida.", ru: "Дело не во фреймворке. Дело в ограничениях.", de: "Es geht nicht ums Framework. Es geht um die Constraints." },
 
   // Pagination
+  "theme.to_light": { en: "Switch to light theme", uz: "Yorug‘ mavzuga o‘tish", ru: "Светлая тема", de: "Helles Design" },
+  "theme.to_dark":  { en: "Switch to dark theme",  uz: "Qorong‘i mavzuga o‘tish", ru: "Тёмная тема",  de: "Dunkles Design" },
+  "photos.h1":   { en: "Off-screen.", uz: "Ekrandan tashqarida.", ru: "Вне экрана.", de: "Abseits des Bildschirms." },
+  "photos.lead": { en: "What I see when I step away from the editor — Tashkent streets, Silk Road tilework, Berlin winters and the occasional desk at 2am.", uz: "Muharrirdan uzoqlashganimda ko‘rganlarim — Toshkent ko‘chalari, Ipak yo‘li koshinlari, Berlin qishi va ba’zan tungi ikkidagi stol.", ru: "То, что я вижу, отходя от редактора, — улицы Ташкента, изразцы Шёлкового пути, берлинские зимы и иногда рабочий стол в 2 часа ночи.", de: "Was ich sehe, wenn ich den Editor verlasse — Straßen in Taschkent, Kacheln der Seidenstraße, Berliner Winter und ab und zu der Schreibtisch um 2 Uhr nachts." },
+  "photos.frames":  { en: "frames", uz: "kadr", ru: "кадров", de: "Bilder" },
+  "photos.cities":  { en: "cities", uz: "shahar", ru: "городов", de: "Städte" },
+  "photos.drop":    { en: "Drop photo", uz: "Surat tashlang", ru: "Перетащите фото", de: "Foto ablegen" },
+  "photos.open":    { en: "Open", uz: "Ochish", ru: "Открыть", de: "Öffnen" },
+  "photos.close":   { en: "Close", uz: "Yopish", ru: "Закрыть", de: "Schließen" },
+  "photos.empty":   { en: "No photo yet — drop one onto the tile.", uz: "Hali surat yo‘q — plitkaga tashlang.", ru: "Фото пока нет — перетащите его на плитку.", de: "Noch kein Foto — zieh eins auf die Kachel." },
+  "photos.date":     { en: "Date", uz: "Sana", ru: "Дата", de: "Datum" },
+  "photos.camera":   { en: "Camera", uz: "Kamera", ru: "Камера", de: "Kamera" },
+  "photos.lens":     { en: "Lens", uz: "Obyektiv", ru: "Объектив", de: "Objektiv" },
+  "photos.exposure": { en: "Exposure", uz: "Ekspozitsiya", ru: "Экспозиция", de: "Belichtung" },
+  "photos.g.all":       { en: "All", uz: "Barchasi", ru: "Все", de: "Alle" },
+  "photos.g.tashkent":  { en: "Tashkent", uz: "Toshkent", ru: "Ташкент", de: "Taschkent" },
+  "photos.g.silkroad":  { en: "Silk Road", uz: "Ipak yo‘li", ru: "Шёлковый путь", de: "Seidenstraße" },
+  "photos.g.berlin":    { en: "Berlin", uz: "Berlin", ru: "Берлин", de: "Berlin" },
+  "photos.g.mountains": { en: "Mountains", uz: "Tog‘lar", ru: "Горы", de: "Berge" },
+  "photos.g.desk":      { en: "Desk", uz: "Ish stoli", ru: "Рабочее место", de: "Schreibtisch" },
   "pg.prev":      { en: "Prev",     uz: "Oldingi",   ru: "Назад",   de: "Zurück" },
   "pg.next":      { en: "Next",     uz: "Keyingi",   ru: "Дальше", de: "Weiter" },
   "blog.no_body": { en: "Full article coming soon. The summary above gives the gist.", uz: "To‘liq maqola tez orada. Yuqoridagi xulosa asosiy fikrni beradi.", ru: "Полная версия скоро. Краткое выше даёт суть.", de: "Vollständiger Artikel folgt. Die Zusammenfassung oben gibt das Wesentliche." },
@@ -481,19 +502,60 @@ window.LangProvider = function LangProvider({ children }) {
   return React.createElement(window.LangContext.Provider, { value: { lang, setLang } }, children);
 };
 
-window.LangSwitcher = function LangSwitcher() {
+window.LangSwitcher = function LangSwitcher({ variant }) {
   const { lang, setLang } = React.useContext(window.LangContext);
+  const [open, setOpen] = React.useState(false);
+  const [active, setActive] = React.useState(0);
+  const ref = React.useRef(null);
+  const cur = window.LANGS.find(L => L.code === lang) || window.LANGS[0];
+
+  React.useEffect(() => {
+    if (!open) return;
+    setActive(Math.max(0, window.LANGS.findIndex(L => L.code === lang)));
+    const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+      else if (e.key === "ArrowDown") { e.preventDefault(); setActive(a => (a + 1) % window.LANGS.length); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); setActive(a => (a - 1 + window.LANGS.length) % window.LANGS.length); }
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onKey); };
+  }, [open]);
+
+  if (variant === "inline") {
+    return (
+      <div className="lang-inline" role="group" aria-label="Language">
+        {window.LANGS.map(L =>
+          <button key={L.code} type="button" className={"lang-chip" + (lang === L.code ? " active" : "")} onClick={() => setLang(L.code)} aria-pressed={lang === L.code}>
+            <span className="lc-code">{L.label}</span><span className="lc-name">{L.name}</span>
+          </button>
+        )}
+      </div>);
+  }
+
+  const pick = (code) => { setLang(code); setOpen(false); };
   return (
-    React.createElement("div", { className: "lang-switcher", role: "group", "aria-label": "Language" },
-      window.LANGS.map(L =>
-        React.createElement("button", {
-          key: L.code,
-          className: "lang-btn" + (lang === L.code ? " active" : ""),
-          onClick: () => setLang(L.code),
-          title: L.name,
-          "aria-pressed": lang === L.code
-        }, L.label)
-      )
-    )
-  );
+    <div className={"lang-dd" + (open ? " open" : "")} ref={ref}>
+      <button type="button" className="lang-dd-trigger" aria-haspopup="listbox" aria-expanded={open} aria-label={"Language: " + cur.name}
+        onClick={() => setOpen(o => !o)}
+        onKeyDown={(e) => { if (open && e.key === "Enter") { e.preventDefault(); pick(window.LANGS[active].code); } }}>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"></path></svg>
+        <span className="lang-dd-code" key={cur.code}>{cur.label}</span>
+        <span className="lang-dd-caret" aria-hidden="true">▾</span>
+      </button>
+      <div className="lang-dd-menu" role="listbox" aria-hidden={!open}>
+        <div className="lang-dd-head">Language</div>
+        {window.LANGS.map((L, i) =>
+          <button key={L.code} type="button" role="option" aria-selected={lang === L.code} tabIndex={open ? 0 : -1}
+            className={"lang-dd-item" + (lang === L.code ? " selected" : "") + (i === active ? " hot" : "")}
+            style={{ transitionDelay: open ? (i * 35 + 40) + "ms" : "0ms" }}
+            onMouseEnter={() => setActive(i)} onClick={() => pick(L.code)}>
+            <span className="ldi-code">{L.label}</span>
+            <span className="ldi-name">{L.name}</span>
+            <span className="ldi-check" aria-hidden="true">{lang === L.code ? "●" : ""}</span>
+          </button>
+        )}
+      </div>
+    </div>);
 };
